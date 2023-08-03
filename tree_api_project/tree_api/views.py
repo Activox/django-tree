@@ -159,11 +159,6 @@ def reset_tree(request):
         return data
 
     subtree = get_subtree_helper(node)
-    print(
-        {
-            "first_node": subtree,
-        }
-    )
     return JsonResponse(
         {"message": "Tree reset successfully", "reset_node": subtree},
         status=status.HTTP_200_OK,
