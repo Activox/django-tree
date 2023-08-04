@@ -23,10 +23,12 @@ The candidate must implement at least three of the following endpoints of the pr
 
 To install this project, you will need to have Python and Django installed on your computer. Once you have those installed, you can clone this repository and run the following command:
   1. Clone or Fork the project
-  2. then `cd tree_api_project`
-  3. then run `python manage.py makemigrations`
-  4. `python manage.py migrate`
-  5. After this run the test `python manage.py test`
+  2. cd django-tree
+  3. enable the virtual environment on the terminal with `myenv\scripts\active`
+  4. then `cd tree_api_project`
+  5. then run `python manage.py makemigrations`
+  6. `python manage.py migrate`
+  7. After this run the test `python manage.py test`
   
   
 ## Stack used
