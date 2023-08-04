@@ -12,7 +12,7 @@ from .views import (
 
 urlpatterns = [
     path("get-subtree/<int:node_id>/", get_subtree, name="get-subtree"),
-    path("get-node/<str:value>/", get_node, name="get-node"),
+    path("get-node/<int:node_id>/", get_node, name="get-node"),
     path("add-node/", add_node, name="add-node"),
     path("create-subnode/<int:node_parent_id>/", create_subnode, name="create-subnode"),
     path("reset-tree/", reset_tree, name="reset-tree"),

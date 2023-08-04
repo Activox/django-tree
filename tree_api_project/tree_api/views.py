@@ -44,16 +44,16 @@ def get_subtree(request, node_id):
 
 
 @api_view(["GET"])
-def get_node(request, value):
+def get_node(request, node_id):
     try:
-        get_node_info = Tree.objects.get(value=value)
+        get_node_info = Tree.objects.get(pk=node_id)
         node = {
             "id": get_node_info.id,
             "value": get_node_info.value,
             "deleted": get_node_info.deleted,
             "parent": get_node_info.parent,
         }
-        return JsonResponse({"node": node}, status=status.HTTP_200_OK)
+        return JsonResponse(node, status=status.HTTP_200_OK)
     except Tree.DoesNotExist:
         return JsonResponse(
             {"error": "Node not found"}, status=status.HTTP_404_NOT_FOUND

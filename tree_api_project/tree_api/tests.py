@@ -2,7 +2,6 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-import json
 
 from .models import Tree
 
@@ -12,7 +11,7 @@ class TreeApiTests(TestCase):
         self.client = APIClient()
 
     def test_add_node(self):
-        print("\n1. test_add_node")
+        print("\r\nCreate a node")
         url = reverse("add-node")
         data = {"value": "Node 1"}
         response = self.client.post(url, data, format="json")
@@ -30,7 +29,7 @@ class TreeApiTests(TestCase):
         )
 
     def test_create_subnode(self):
-        print("\n2. test_create_subnode")
+        print("\r\nCreate a node with subnodes")
 
         url = reverse("add-node")
         data = {"value": "Node 1"}
@@ -65,11 +64,12 @@ class TreeApiTests(TestCase):
 
         print(response.json())
 
-    def test_set_node_value(self):
-        print("\n3. test_set_node_value")
+    def test_set_node_new_value(self):
+        print("\r\nChange a node Value")
 
         node = Tree.objects.create(value="Node 1")
-        url = reverse("change-node-value", args=[node.id])
+        print({"node.value": node.value})
+        url = reverse("change-node-value", kwargs={"node_id": int(node.id)})
         data = {"value": "New Node Value"}
         response = self.client.put(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -78,16 +78,16 @@ class TreeApiTests(TestCase):
         self.assertEqual(node.value, "New Node Value")
         print(
             {
-                "node.value": node.value,
+                "new node.value": node.value,
             }
         )
 
     def test_delete_node(self):
-        print("\n4. test_delete_node")
+        print("\r\nDelete a node")
 
         node = Tree.objects.create(value="Node 1")
         child_node = Tree.objects.create(value="Child Node", parent=node)
-        url = reverse("delete-node", args=[node.id])
+        url = reverse("delete-node", kwargs={"node_id": int(node.id)})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -98,7 +98,7 @@ class TreeApiTests(TestCase):
         self.assertTrue(child_node.deleted)
 
     def test_reset_node(self):
-        print("\n5. test_reset_node")
+        print("\r\nReset a node with 4 levels and 10 nodes")
 
         node = Tree.objects.create(value="Node 1")
         child_node = Tree.objects.create(value="Child Node", parent=node)
@@ -112,3 +112,61 @@ class TreeApiTests(TestCase):
 
         self.assertFalse(node.deleted)
         self.assertFalse(child_node.deleted)
+
+    def test_restore_deleted_node(self):
+        print("\r\nRestore a deleted Node")
+
+        node = Tree.objects.create(value="Node 1")
+        child_node = Tree.objects.create(value="Child Node", parent=node)
+        url = reverse("delete-node", kwargs={"node_id": int(node.id)})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        node.refresh_from_db()
+        child_node.refresh_from_db()
+
+        self.assertTrue(node.deleted)
+        self.assertTrue(child_node.deleted)
+
+        url = reverse("restore-deleted-node", kwargs={"node_id": int(node.id)})
+        response = self.client.put(url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        node.refresh_from_db()
+        child_node.refresh_from_db()
+
+        self.assertFalse(node.deleted)
+        self.assertFalse(child_node.deleted)
+
+    def test_obtain_subnode_from_specified_node(self):
+        print("\r\nObtain a subnode from specified node")
+
+        node = Tree.objects.create(value="Node 1")
+        child_node = Tree.objects.create(value="Child Node", parent=node)
+        url = reverse("get-node", kwargs={"node_id": int(node.id)})
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print({"response": response.json()})
+        data = response.json()
+        self.assertEqual(data["id"], child_node.id)
+        self.assertEqual(data["value"], child_node.value)
+        self.assertEqual(data["parent"], node.id)
+
+    def test_obtain_subtree_from_specified_node_with_deleted_child(self):
+        print("\r\nObtain a subtree from specified node with deleted child")
+
+        node = Tree.objects.create(value="Node 1")
+        child_node = Tree.objects.create(value="Child Node", parent=node)
+        url = reverse("delete-node", kwargs={"node_id": int(child_node.id)})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        url = reverse("get-subtree", kwargs={"node_id": int(node.id)})
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print({"response": response.json()})
+        data = response.json()
+        self.assertEqual(data["id"], node.id)
+        self.assertEqual(data["value"], node.value)
+        self.assertEqual(data["parent"], None)
+        self.assertEqual(len(data["children"]), 0)
