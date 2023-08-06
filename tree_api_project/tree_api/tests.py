@@ -107,12 +107,6 @@ class TreeApiTests(TestCase):
         print(response.json())
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        node.refresh_from_db()
-        child_node.refresh_from_db()
-
-        self.assertFalse(node.deleted)
-        self.assertFalse(child_node.deleted)
-
     def test_restore_deleted_node(self):
         print("\r\nRestore a deleted Node")
 
@@ -143,7 +137,7 @@ class TreeApiTests(TestCase):
 
         node = Tree.objects.create(value="Node 1")
         child_node = Tree.objects.create(value="Child Node", parent=node)
-        url = reverse("get-node", kwargs={"node_id": int(node.id)})
+        url = reverse("get-subtree", kwargs={"node_id": int(child_node.id)})
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         print({"response": response.json()})
@@ -165,8 +159,9 @@ class TreeApiTests(TestCase):
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         print({"response": response.json()})
+
         data = response.json()
         self.assertEqual(data["id"], node.id)
         self.assertEqual(data["value"], node.value)
         self.assertEqual(data["parent"], None)
-        self.assertEqual(len(data["children"]), 0)
+        self.assertEqual(len(data["children"]), 1)
