@@ -1,0 +1,27 @@
+# Virtual environment
+venv/
+myenv/
+*.pyc
+__pycache__/
+
+# Database
+db.sqlite3
+
+# Static files
+staticfiles/
+
+# Media files
+media/
+
+# Local development settings
+*.env
+
+# Compiled Python files
+*.pyc
+__pycache__/
+
+# macOS system files
+.DS_Store
+
+# Logs
+*.log
