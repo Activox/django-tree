@@ -27,7 +27,7 @@ To install this project, you will need to have Python and Django installed on yo
 1. clone or Fork the project
 2. then `cd tree_api_project`
 3. create a virtual enviroment `python -m venv venv`
-4. active this virual enviroment for (Linux/Mac) `source django-tree/venv/bin/activate` or `django-tree\venv\Scripts\activate` for Windows
+4. active this virual enviroment for (Linux/Mac) `source venv/bin/activate` or `venv\Scripts\activate` for Windows
 5. install requirements `pip install -r requirements.txt`
 6. last but not least run the test `python manage.py test`
 
