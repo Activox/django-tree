@@ -29,9 +29,7 @@ To install this project, you will need to have Python and Django installed on yo
 3. create a virtual enviroment `python -m venv venv`
 4. active this virual enviroment for (Linux/Mac) `source django-tree/venv/bin/activate` or `django-tree\venv\Scripts\activate` for Windows
 5. install requirements `pip install -r requirements.txt`
-6. then run `python manage.py makemigrations`
-7. now run `python manage.py migrate`
-8. last but not least run the test `python manage.py test`
+6. last but not least run the test `python manage.py test`
 
 ## Stack used
 
